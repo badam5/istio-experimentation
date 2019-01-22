@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: external-svc-dns
+spec:
+  hosts:
+  - foo.bar.com
+  location: MESH_EXTERNAL
+  ports:
+  - number: 80
+    name: https
+    protocol: HTTP
+  resolution: DNS
+  endpoints:
+  - address: us.foo.bar.com
+    ports:
+      https: 8080
+  - address: uk.foo.bar.com
+    ports:
+      https: 9080
+  - address: in.foo.bar.com
+    ports:
+      https: 7080

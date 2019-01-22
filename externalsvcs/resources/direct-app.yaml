@@ -1,0 +1,52 @@
+# Direct App
+#
+# In all of our tests, this app should appear when we access things directly,
+# without routing through a VirtualService.
+#
+# To check that this has deployed correctly, you can run:
+#
+#    curl $(eval minikube service direct-app --url)/message
+#
+# Which should return the message "You skipped the virtual service!"
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: direct-app
+  labels:
+    app: direct
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: direct
+  template:
+    metadata:
+      labels:
+        app: direct
+    spec:
+      containers:
+      - name: direct-app
+        image: app
+        imagePullPolicy: Never
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: MY_SECRET_MESSAGE
+          value: "You skipped the virtual service!"
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: direct-app
+spec:
+  selector:
+    app: direct
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: NodePort
